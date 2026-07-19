@@ -35,4 +35,55 @@ public class AuthorService {
 
         return authorDtos;
     }
+
+    public AuthorDto getAuthorById(Long id) {
+
+        Author author = authorRepository.findById(id).orElseThrow();
+
+        AuthorDto dto = new AuthorDto();
+
+        dto.setId(author.getId());
+        dto.setFullName(author.getFullName());
+        dto.setEmail(author.getEmail());
+
+        return dto;
+    }
+
+    public AuthorDto createAuthor(AuthorDto authorDto) {
+
+        Author author = new Author();
+
+        author.setFullName(authorDto.getFullName());
+        author.setEmail(authorDto.getEmail());
+
+        Author savedAuthor = authorRepository.save(author);
+
+        return new AuthorDto(
+                savedAuthor.getId(),
+                savedAuthor.getFullName(),
+                savedAuthor.getEmail()
+        );
+    }
+
+    public AuthorDto updateAuthor(Long id, AuthorDto authorDto) {
+
+        Author author = authorRepository.findById(id).orElseThrow();
+
+        author.setFullName(authorDto.getFullName());
+        author.setEmail(authorDto.getEmail());
+
+        Author updatedAuthor = authorRepository.save(author);
+
+        return new AuthorDto(
+                updatedAuthor.getId(),
+                updatedAuthor.getFullName(),
+                updatedAuthor.getEmail()
+        );
+    }
+
+    public void deleteAuthor(Long id) {
+
+        authorRepository.deleteById(id);
+
+    }
 }

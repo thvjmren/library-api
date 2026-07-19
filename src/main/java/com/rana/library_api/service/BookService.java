@@ -39,4 +39,61 @@ public class BookService {
 
         return bookDtos;
     }
+
+    public BookDto getBookById(Long id) {
+
+        Book book = bookRepository.findById(id).orElseThrow();
+
+        BookDto dto = new BookDto();
+
+        dto.setId(book.getId());
+        dto.setTitle(book.getTitle());
+        dto.setIsbn(book.getIsbn());
+
+        if (book.getAuthor() != null) {
+            dto.setAuthorId(book.getAuthor().getId());
+        }
+
+        return dto;
+    }
+
+    public BookDto createBook(BookDto bookDto) {
+
+        Book book = new Book();
+
+        book.setTitle(bookDto.getTitle());
+        book.setIsbn(bookDto.getIsbn());
+
+        Book savedBook = bookRepository.save(book);
+
+        return new BookDto(
+                savedBook.getId(),
+                savedBook.getTitle(),
+                savedBook.getIsbn(),
+                null
+        );
+    }
+
+    public BookDto updateBook(Long id, BookDto bookDto) {
+
+        Book book = bookRepository.findById(id).orElseThrow();
+
+        book.setTitle(bookDto.getTitle());
+        book.setIsbn(bookDto.getIsbn());
+
+        Book updatedBook = bookRepository.save(book);
+
+        return new BookDto(
+                updatedBook.getId(),
+                updatedBook.getTitle(),
+                updatedBook.getIsbn(),
+                null
+        );
+    }
+
+    public void deleteBook(Long id) {
+
+        bookRepository.deleteById(id);
+
+    }
 }

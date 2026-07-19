@@ -2,8 +2,9 @@ package com.rana.library_api.controller;
 
 import com.rana.library_api.dto.BookDto;
 import com.rana.library_api.service.BookService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,7 +19,30 @@ public class BookController {
     }
 
     @GetMapping
-    public List<BookDto> getAllBooks() {
-        return bookService.getAllBooks();
+    public ResponseEntity<List<BookDto>> getAllBooks() {
+        return ResponseEntity.ok(bookService.getAllBooks());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<BookDto> getBookById(@PathVariable Long id) {
+        return ResponseEntity.ok(bookService.getBookById(id));
+    }
+
+    @PostMapping
+    public ResponseEntity<BookDto> createBook(@RequestBody BookDto bookDto) {
+        BookDto createdBook = bookService.createBook(bookDto);
+        return new ResponseEntity<>(createdBook, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<BookDto> updateBook(@PathVariable Long id,
+                                              @RequestBody BookDto bookDto) {
+        return ResponseEntity.ok(bookService.updateBook(id, bookDto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
+        bookService.deleteBook(id);
+        return ResponseEntity.noContent().build();
     }
 }
