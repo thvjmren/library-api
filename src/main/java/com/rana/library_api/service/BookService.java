@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class BookService {
@@ -17,27 +19,15 @@ public class BookService {
         this.bookRepository = bookRepository;
     }
 
-    public List<BookDto> getAllBooks() {
+    public Page<BookDto> getAllBooks(Pageable pageable) {
 
-        List<Book> books = bookRepository.findAll();
-        List<BookDto> bookDtos = new ArrayList<>();
-
-        for (Book book : books) {
-
-            BookDto dto = new BookDto();
-
-            dto.setId(book.getId());
-            dto.setTitle(book.getTitle());
-            dto.setIsbn(book.getIsbn());
-
-            if (book.getAuthor() != null) {
-                dto.setAuthorId(book.getAuthor().getId());
-            }
-
-            bookDtos.add(dto);
-        }
-
-        return bookDtos;
+        return bookRepository.findAll(pageable)
+                .map(book -> new BookDto(
+                        book.getId(),
+                        book.getTitle(),
+                        book.getIsbn(),
+                        book.getAuthor() != null ? book.getAuthor().getId() : null
+                ));
     }
 
     public BookDto getBookById(Long id) {

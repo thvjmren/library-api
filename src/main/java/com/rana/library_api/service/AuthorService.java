@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class AuthorService {
@@ -17,25 +19,15 @@ public class AuthorService {
         this.authorRepository = authorRepository;
     }
 
-    public List<AuthorDto> getAllAuthors() {
+    public Page<AuthorDto> getAllAuthors(Pageable pageable) {
 
-        List<Author> authors = authorRepository.findAll();
-        List<AuthorDto> authorDtos = new ArrayList<>();
-
-        for (Author author : authors) {
-
-            AuthorDto dto = new AuthorDto();
-
-            dto.setId(author.getId());
-            dto.setFullName(author.getFullName());
-            dto.setEmail(author.getEmail());
-
-            authorDtos.add(dto);
-        }
-
-        return authorDtos;
+        return authorRepository.findAll(pageable)
+                .map(author -> new AuthorDto(
+                        author.getId(),
+                        author.getFullName(),
+                        author.getEmail()
+                ));
     }
-
     public AuthorDto getAuthorById(Long id) {
 
         Author author = authorRepository.findById(id).orElseThrow();
