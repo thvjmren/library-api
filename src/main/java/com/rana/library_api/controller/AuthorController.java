@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/authors")
@@ -29,20 +30,21 @@ public class AuthorController {
     }
 
     @PostMapping
-    public ResponseEntity<AuthorDto> createAuthor(@RequestBody AuthorDto authorDto) {
+    public ResponseEntity<AuthorDto> createAuthor(@Valid @RequestBody AuthorDto authorDto) {
         AuthorDto createdAuthor = authorService.createAuthor(authorDto);
         return new ResponseEntity<>(createdAuthor, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AuthorDto> updateAuthor(@PathVariable Long id,
-                                                  @RequestBody AuthorDto authorDto) {
+    public ResponseEntity<AuthorDto> updateAuthor(
+            @PathVariable Long id,
+            @Valid @RequestBody AuthorDto authorDto) {
+
         return ResponseEntity.ok(authorService.updateAuthor(id, authorDto));
     }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAuthor(@PathVariable Long id) {
         authorService.deleteAuthor(id);
         return ResponseEntity.noContent().build();
     }
-}
+} 

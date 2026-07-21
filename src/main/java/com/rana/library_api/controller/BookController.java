@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/books")
@@ -29,14 +30,16 @@ public class BookController {
     }
 
     @PostMapping
-    public ResponseEntity<BookDto> createBook(@RequestBody BookDto bookDto) {
+    public ResponseEntity<BookDto> createBook(@Valid @RequestBody BookDto bookDto) {
         BookDto createdBook = bookService.createBook(bookDto);
         return new ResponseEntity<>(createdBook, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BookDto> updateBook(@PathVariable Long id,
-                                              @RequestBody BookDto bookDto) {
+    public ResponseEntity<BookDto> updateBook(
+            @PathVariable Long id,
+            @Valid @RequestBody BookDto bookDto) {
+
         return ResponseEntity.ok(bookService.updateBook(id, bookDto));
     }
 

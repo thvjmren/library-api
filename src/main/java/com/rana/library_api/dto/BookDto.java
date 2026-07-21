@@ -14,7 +14,14 @@ import lombok.Setter;
 public class BookDto {
 
     private Long id;
+
+    @NotBlank(message = "Title is Required")
+    @Size(min = 2, max = 200)
     private String title;
+
+    @NotBlank(message = "ISBN is Required")
     private String isbn;
+
+    @NotNull(message = "Author ID is Required")
     private Long authorId;
 }
