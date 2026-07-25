@@ -5,19 +5,22 @@ import com.rana.library_api.entity.Book;
 import com.rana.library_api.repository.BookRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import com.rana.library_api.entity.Author;
+import com.rana.library_api.repository.AuthorRepository;
 
 @Service
 public class BookService {
 
     private final BookRepository bookRepository;
+    private final AuthorRepository authorRepository;
 
-    public BookService(BookRepository bookRepository) {
-        this.bookRepository = bookRepository;
-    }
+    public BookService(BookRepository bookRepository,
+                   AuthorRepository authorRepository) {
+    this.bookRepository = bookRepository;
+    this.authorRepository = authorRepository;
+}
 
     public Page<BookDto> getAllBooks(Pageable pageable) {
 
@@ -48,11 +51,15 @@ public class BookService {
     }
 
     public BookDto createBook(BookDto bookDto) {
-
         Book book = new Book();
 
         book.setTitle(bookDto.getTitle());
         book.setIsbn(bookDto.getIsbn());
+
+        Author author = authorRepository.findById(bookDto.getAuthorId())
+                .orElseThrow(() -> new RuntimeException("Author not found"));
+
+        book.setAuthor(author);
 
         Book savedBook = bookRepository.save(book);
 
@@ -60,16 +67,22 @@ public class BookService {
                 savedBook.getId(),
                 savedBook.getTitle(),
                 savedBook.getIsbn(),
-                null
+                savedBook.getAuthor().getId()
         );
     }
 
     public BookDto updateBook(Long id, BookDto bookDto) {
 
-        Book book = bookRepository.findById(id).orElseThrow();
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Book not found"));
 
         book.setTitle(bookDto.getTitle());
         book.setIsbn(bookDto.getIsbn());
+
+        Author author = authorRepository.findById(bookDto.getAuthorId())
+                .orElseThrow(() -> new RuntimeException("Author not found"));
+
+        book.setAuthor(author);
 
         Book updatedBook = bookRepository.save(book);
 
@@ -77,7 +90,7 @@ public class BookService {
                 updatedBook.getId(),
                 updatedBook.getTitle(),
                 updatedBook.getIsbn(),
-                null
+                updatedBook.getAuthor().getId()
         );
     }
 
