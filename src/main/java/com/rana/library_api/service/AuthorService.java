@@ -5,8 +5,6 @@ import com.rana.library_api.entity.Author;
 import com.rana.library_api.repository.AuthorRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
