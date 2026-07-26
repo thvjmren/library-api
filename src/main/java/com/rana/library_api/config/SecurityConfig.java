@@ -39,6 +39,25 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
 
+                .exceptionHandling(exception -> exception
+
+                        .authenticationEntryPoint(
+                                (request, response, authException) -> {
+                                    response.setStatus(401);
+                                    response.getWriter()
+                                            .write("Unauthorized: Invalid or Missing Token");
+                                }
+                        )
+
+                        .accessDeniedHandler(
+                                (request, response, accessDeniedException) -> {
+                                    response.setStatus(403);
+                                    response.getWriter()
+                                            .write("Forbidden: Access denied");
+                                }
+                        )
+                )
+
                 .addFilterBefore(
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class
