@@ -137,4 +137,21 @@ public class BookService {
     public void deleteBook(Long id) {
         bookRepository.deleteById(id);
     }
+
+    public List<BookDto> searchBooks(String title) {
+
+        return bookRepository.findByTitleContainingIgnoreCase(title)
+                .stream()
+                .map(book -> new BookDto(
+                        book.getId(),
+                        book.getTitle(),
+                        book.getIsbn(),
+                        book.getAuthor() != null ? book.getAuthor().getId() : null,
+                        book.getCategories()
+                                .stream()
+                                .map(Category::getId)
+                                .toList()
+                ))
+                .toList();
+        }
 }
