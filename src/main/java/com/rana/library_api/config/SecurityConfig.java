@@ -28,16 +28,21 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers("/auth/**").permitAll()
+                .requestMatchers(
+                        "/auth/**",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/v3/api-docs/**"
+                ).permitAll()
 
-                        .requestMatchers("/admin/**")
-                        .hasRole("ADMIN")
+                .requestMatchers("/admin/**")
+                .hasRole("ADMIN")
 
-                        .requestMatchers("/user/**")
-                        .hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/user/**")
+                .hasAnyRole("USER", "ADMIN")
 
-                        .anyRequest().authenticated()
-                )
+                .anyRequest().authenticated()
+        )
 
                 .exceptionHandling(exception -> exception
 

@@ -1,13 +1,12 @@
 package com.rana.library_api.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -16,6 +15,7 @@ import jakarta.validation.constraints.Size;
 @Builder
 public class BookDto {
 
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private Long id;
 
     @NotBlank(message = "Title is Required")
@@ -27,4 +27,6 @@ public class BookDto {
 
     @NotNull(message = "Author ID is Required")
     private Long authorId;
+
+    private List<Long> categoryIds;
 }
