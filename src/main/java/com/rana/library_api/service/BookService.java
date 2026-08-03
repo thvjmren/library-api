@@ -29,45 +29,22 @@ public class BookService {
         this.categoryRepository = categoryRepository;
     }
 
+
     public Page<BookDto> getAllBooks(Pageable pageable) {
 
         return bookRepository.findAll(pageable)
-                .map(book -> new BookDto(
-                        book.getId(),
-                        book.getTitle(),
-                        book.getIsbn(),
-                        book.getAuthor() != null ? book.getAuthor().getId() : null,
-                        book.getCategories()
-                                .stream()
-                                .map(Category::getId)
-                                .toList()
-                ));
+                .map(this::mapToDto);
     }
+
 
     public BookDto getBookById(Long id) {
 
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Book Not Found."));
 
-        BookDto dto = new BookDto();
-
-        dto.setId(book.getId());
-        dto.setTitle(book.getTitle());
-        dto.setIsbn(book.getIsbn());
-
-        if (book.getAuthor() != null) {
-            dto.setAuthorId(book.getAuthor().getId());
-        }
-
-        dto.setCategoryIds(
-                book.getCategories()
-                        .stream()
-                        .map(Category::getId)
-                        .toList()
-        );
-
-        return dto;
+        return mapToDto(book);
     }
+
 
     public BookDto createBook(BookDto bookDto) {
 
@@ -81,77 +58,80 @@ public class BookService {
 
         book.setAuthor(author);
 
+
         List<Category> categories = bookDto.getCategoryIds() == null
                 ? List.of()
                 : categoryRepository.findAllById(bookDto.getCategoryIds());
 
         book.setCategories(categories);
 
-        Book savedBook = bookRepository.save(book);
 
-        return new BookDto(
-                savedBook.getId(),
-                savedBook.getTitle(),
-                savedBook.getIsbn(),
-                savedBook.getAuthor().getId(),
-                savedBook.getCategories()
-                        .stream()
-                        .map(Category::getId)
-                        .toList()
-        );
+        return mapToDto(bookRepository.save(book));
     }
+
 
     public BookDto updateBook(Long id, BookDto bookDto) {
 
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Book Not Found."));
 
+
         book.setTitle(bookDto.getTitle());
         book.setIsbn(bookDto.getIsbn());
+
 
         Author author = authorRepository.findById(bookDto.getAuthorId())
                 .orElseThrow(() -> new RuntimeException("Author Not Found."));
 
+
         book.setAuthor(author);
+
 
         List<Category> categories = bookDto.getCategoryIds() == null
                 ? List.of()
                 : categoryRepository.findAllById(bookDto.getCategoryIds());
 
+
         book.setCategories(categories);
 
-        Book updatedBook = bookRepository.save(book);
+
+        return mapToDto(bookRepository.save(book));
+    }
+
+
+    public void deleteBook(Long id) {
+
+        bookRepository.deleteById(id);
+    }
+
+
+    public List<BookDto> searchBooks(
+            String title,
+            String author,
+            String category) {
+
+        return bookRepository.searchBooks(title, author, category)
+                .stream()
+                .map(this::mapToDto)
+                .toList();
+    }
+
+
+    private BookDto mapToDto(Book book) {
 
         return new BookDto(
-                updatedBook.getId(),
-                updatedBook.getTitle(),
-                updatedBook.getIsbn(),
-                updatedBook.getAuthor().getId(),
-                updatedBook.getCategories()
+                book.getId(),
+                book.getTitle(),
+                book.getIsbn(),
+
+                book.getAuthor() != null
+                        ? book.getAuthor().getId()
+                        : null,
+
+                book.getCategories()
                         .stream()
                         .map(Category::getId)
                         .toList()
         );
     }
-
-    public void deleteBook(Long id) {
-        bookRepository.deleteById(id);
-    }
-
-    public List<BookDto> searchBooks(String title) {
-
-        return bookRepository.findByTitleContainingIgnoreCase(title)
-                .stream()
-                .map(book -> new BookDto(
-                        book.getId(),
-                        book.getTitle(),
-                        book.getIsbn(),
-                        book.getAuthor() != null ? book.getAuthor().getId() : null,
-                        book.getCategories()
-                                .stream()
-                                .map(Category::getId)
-                                .toList()
-                ))
-                .toList();
-        }
 }

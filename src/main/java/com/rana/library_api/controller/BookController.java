@@ -28,9 +28,13 @@ public class BookController {
 
     @GetMapping("/search")
     public ResponseEntity<List<BookDto>> searchBooks(
-            @RequestParam String title) {
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String author,
+            @RequestParam(required = false) String category) {
 
-        return ResponseEntity.ok(bookService.searchBooks(title));
+        return ResponseEntity.ok(
+                bookService.searchBooks(title, author, category)
+        );
     }
 
     @GetMapping("/{id}")
