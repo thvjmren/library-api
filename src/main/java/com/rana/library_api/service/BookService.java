@@ -10,6 +10,8 @@ import com.rana.library_api.repository.CategoryRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import com.rana.library_api.specification.BookSpecification;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 
@@ -104,18 +106,21 @@ public class BookService {
         bookRepository.deleteById(id);
     }
 
-
     public List<BookDto> searchBooks(
-            String title,
-            String author,
-            String category) {
+        String title,
+        String author,
+        String category) {
 
-        return bookRepository.searchBooks(title, author, category)
-                .stream()
-                .map(this::mapToDto)
-                .toList();
-    }
+    Specification<Book> specification = Specification
+            .where(BookSpecification.hasTitle(title))
+            .and(BookSpecification.hasAuthor(author))
+            .and(BookSpecification.hasCategory(category));
 
+    return bookRepository.findAll(specification)
+            .stream()
+            .map(this::mapToDto)
+            .toList();
+}
 
     private BookDto mapToDto(Book book) {
 
