@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import com.rana.library_api.specification.BookSpecification;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -46,8 +47,8 @@ public class BookService {
 
         return mapToDto(book);
     }
-
-
+    
+    @Transactional
     public BookDto createBook(BookDto bookDto) {
 
         Book book = new Book();
@@ -70,8 +71,8 @@ public class BookService {
 
         return mapToDto(bookRepository.save(book));
     }
-
-
+    
+    @Transactional
     public BookDto updateBook(Long id, BookDto bookDto) {
 
         Book book = bookRepository.findById(id)
